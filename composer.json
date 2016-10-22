@@ -47,7 +47,7 @@
     "repositories": [
         {
             "type": "path",
-            "url": "./../laravel"
+            "url": "./../laravel-src/laravelmaster"
         }
     ],
     "minimum-stability": "dev",
