@@ -1,25 +1,23 @@
 <?php
 
-namespace App\Listeners;
+namespace App;
 
-use Illuminate\Routing\Events\RouteCreated;
-
-class CreateLocaleRoutes
+class Localizer
 {
     /**
      * Handle the event.
      *
-     * @param  RouteCreated  $event
+     * @param  \Illuminate\Routing\Router  $router
      * @return void
      */
-    public function handle(RouteCreated $event)
+    public function localizeRoutes($router)
     {
-        if (! $this->routeShouldBeLocalized($event->route)) {
-            return;
-        }
-
-        foreach (config('app.locales') as $locale) {
-            $this->addRouteForLocale($event->route, $locale, $event->router);
+        foreach ($router->getRoutes() as $route) {
+            if ($this->routeShouldBeLocalized($route)) {
+                foreach (config('app.locales') as $locale) {
+                    $this->addRouteForLocale($route, $locale, $router);
+                }
+            }
         }
     }
 
@@ -40,6 +38,10 @@ class CreateLocaleRoutes
         $route->setUri(
             $routeUri == '/' ? $locale : $locale.'/'.$routeUri
         );
+
+        if ($routeName = $route->getName()) {
+            $route->name('.'.$locale);
+        }
 
         $router->getRoutes()->add($route);
     }

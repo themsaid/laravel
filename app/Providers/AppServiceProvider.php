@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Localizer;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -11,9 +12,9 @@ class AppServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function booted()
     {
-        //
+
     }
 
     /**
@@ -23,6 +24,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->booted(function () {
+            (new Localizer)->localizeRoutes(app('router'));
+        });
     }
 }

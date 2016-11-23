@@ -19,8 +19,10 @@ $test = function () {
 Route::group(['middleware' => 'localize'], function () use ($test) {
     Route::get('/', $test);
 
-    Route::get('/test', $test);
+    Route::get('/test', $test)->name('test');
 });
+
+Route::get('/test2', $test)->middleware('localize');
 
 Route::get('/nolocale', $test);
 
