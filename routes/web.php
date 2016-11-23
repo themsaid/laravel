@@ -1,16 +1,52 @@
 <?php
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| This file is where you may define all of the routes that are handled
-| by your application. Just tell Laravel the URIs it should respond
-| to using a Closure or controller method. Build something great!
-|
-*/
+use Illuminate\Support\Facades\URL;
 
-Route::get('/', function () {
-    return view('welcome');
+$test = function () {
+    dump(__('Translated message.'));
+
+    // use same locale...
+    dump(url('some/url'));
+
+    // use custom locale...
+    dump(url_with_locale('ar', 'some/url'));
+
+    // use no locale...
+    dump(url_without_locale('some/url'));
+};
+
+
+Route::group(['middleware' => 'localize'], function () use ($test) {
+    Route::get('/', $test);
+
+    Route::get('/test', $test);
 });
+
+Route::get('/nolocale', $test);
+
+
+function url_without_locale($path)
+{
+    $formatter = URL::pathFormatter();
+
+    URL::formatPathUsing(function ($path) {
+        return $path;
+    });
+
+    return tap(url($path), function ($path) use ($formatter) {
+        URL::formatPathUsing($formatter);
+    });
+}
+
+function url_with_locale($locale, $path)
+{
+    $formatter = URL::pathFormatter();
+
+    URL::formatPathUsing(function ($path) use ($locale) {
+        return rtrim('/'.$locale.$path, '/');
+    });
+
+    return tap(url($path), function ($path) use ($formatter) {
+        URL::formatPathUsing($formatter);
+    });
+}
